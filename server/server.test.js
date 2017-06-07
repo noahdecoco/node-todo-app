@@ -10,6 +10,7 @@ const todos = [
     _id: new ObjectID(),
     text: 'Todo 1'
   },{
+    _id: new ObjectID(),
     text: 'Todo 2'
   }];
 
@@ -33,7 +34,7 @@ const todos = [
         expect(res.body.text).toBe(text);
       })
       .end((err, res) => {
-        if(err) return console.log(err);
+        if(err) return done(err);
 
         Todo.find({text}).then((todos) => {
           expect(todos.length).toBe(1);
@@ -51,7 +52,7 @@ const todos = [
       .send({})
       .expect(400)
       .end((err, res) => {
-        if(err) return console.log(err);
+        if(err) return done(err);
 
         Todo.find().then((todos) => {
           expect(todos.length).toBe(2);
@@ -71,7 +72,7 @@ const todos = [
       .get('/todos')
       .expect(200)
       .end((err, res) => {
-        if(err) return console.log(err);
+        if(err) return done(err);
 
         Todo.find().then((todos) => {
           expect(todos.length).toBe(2);
@@ -94,7 +95,7 @@ const todos = [
       .get(`/todos/${id}`)
       .expect(200)
       .end((err, res) => {
-        if(err) return console.log(err);
+        if(err) return done(err);
 
         expect(res.body.todo).toBeA('object');
         expect(res.body.todo.text).toBe(todos[0].text);
@@ -118,6 +119,57 @@ const todos = [
 
       request(app)
       .get('/todos/123abc')
+      .expect(404)
+      .end((err, res) => {
+        done();
+      });
+
+    });
+
+  });
+
+  describe('DELETE /todos/:id', () => {
+
+    var id = todos[1]._id.valueOf();
+    var fakeId = new ObjectID().valueOf();
+
+    it('should delete get a specific todo doc', (done) => {
+      request(app)
+      .delete(`/todos/${id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.text).toBe(todos[1].text);
+      })
+      .end((err, res) => {
+
+        if(err) return done(err);
+
+        Todo.findById(id).then((todo) => {
+
+          expect(todo).toNotExist();
+          done();
+
+        }).catch((err) => done(err));
+
+      });
+
+    });
+
+    it('should return 404 if not found', (done) => {
+
+      request(app)
+      .delete(`/todos/${fakeId}`)
+      .expect(404)
+      .end((err, res) => {
+        done();
+      });
+
+    });
+
+    it('should return 404 for non objectIDs', (done) => {
+
+      request(app)
+      .delete('/todos/123abc')
       .expect(404)
       .end((err, res) => {
         done();
