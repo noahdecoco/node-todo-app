@@ -5,17 +5,19 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/server.js",
+    "develop": "nodemon server/server.js",
     "test": "mocha server/**/*.test.js",
     "test-watch": "nodemon --exec \"npm run test\""
   },
   "engines": {
-    "node" : "6.9.1"
+    "node": "6.9.1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
+    "lodash": "^4.17.4",
     "mongodb": "^2.2.28",
     "mongoose": "^4.10.4"
   },

@@ -8,10 +8,12 @@ const {Todo} = require('./models/todo');
 const todos = [
   {
     _id: new ObjectID(),
-    text: 'Todo 1'
+    text: 'Todo 1',
+    createdAt: Date.now()
   },{
     _id: new ObjectID(),
-    text: 'Todo 2'
+    text: 'Todo 2',
+    createdAt: Date.now()
   }];
 
   beforeEach((done) => {
@@ -171,6 +173,56 @@ const todos = [
       request(app)
       .delete('/todos/123abc')
       .expect(404)
+      .end((err, res) => {
+        done();
+      });
+
+    });
+
+  });
+
+  describe('PATCH /todos', () => {
+
+    it('should update an existing todo', (done) => {
+
+      var id = todos[0]._id.valueOf();
+      var text = "Updated text";
+
+      request(app)
+      .patch(`/todos/${id}`)
+      .send({
+        completed: true,
+        text
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.text).toBe(text);
+        expect(res.body.completed).toBe(true);
+        expect(res.body.completedAt).toBeA('number');
+      })
+      .end((err, res) => {
+        done();
+      });
+
+    });
+
+    it('should clear completedAt when todo is not completed', (done) => {
+
+      var id = todos[1]._id.valueOf();
+      var text = "Updated text";
+
+      request(app)
+      .patch(`/todos/${id}`)
+      .send({
+        completed: false,
+        text
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.text).toNotBe(text);
+        expect(res.body.completed).toBe(false);
+        expect(res.body.completedAt).toNotExist();
+      })
       .end((err, res) => {
         done();
       });
