@@ -119,6 +119,20 @@ app.patch('/todos/:id', (req, res) => {
 
 });
 
+// Create a new user
+app.post('/users', (req, res) => {
+
+  let body = _.pick(req.body, ['email', 'password']);
+  let user = new User(body);
+
+  user.save().then((doc) => {
+    res.send(doc);
+  }, (err) => {
+    res.status(400).send(err);
+  })
+
+});
+
 app.listen(process.env.PORT, () => {
   console.log(`Listening on port ${process.env.PORT}`);
 });
