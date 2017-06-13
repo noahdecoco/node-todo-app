@@ -65,7 +65,7 @@ UserSchema.methods.generateAuthToken = function () {
   var token = jwt.sign({access, _id: user._id.toHexString()}, 'abc123').toString();
 
   user.tokens.push({access, token});
-console.log('making token');
+
   return user.save().then(() => {
     return token;
   });
@@ -113,6 +113,18 @@ UserSchema.statics.findByCredentials = function(email, password) {
 
     });
 
+  });
+
+};
+
+UserSchema.methods.removeToken = function(token) {
+
+  var user = this;
+
+  return user.update({
+    $pull: {
+      tokens: {token}
+    }
   });
 
 };

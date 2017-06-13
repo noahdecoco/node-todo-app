@@ -170,9 +170,19 @@ app.post('/users/login', (req, res) => {
 
   User.findByCredentials(body.email, body.password).then((user) => {
     return user.generateAuthToken().then((token) => {
-      console.log('fds');
       res.header('x-auth', token).send(user);
     });
+  }).catch((err) => {
+    res.status(400).send();
+  });
+
+});
+
+// Logout user
+app.delete('/users/me/token', authenticate, (req, res) => {
+console.log(req.user);
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send();
   }).catch((err) => {
     res.status(400).send();
   });
