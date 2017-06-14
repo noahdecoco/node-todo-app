@@ -23,7 +23,27 @@ const users = [
     _id: userTwoId,
     email: 'usertwo@email.com',
     password: 'password123',
-    tokens: []
+    tokens: [
+      {
+        access: 'auth',
+        token: jwt.sign({access: 'auth', _id: userTwoId}, 'abc123').toString()
+      }
+    ]
+  }
+];
+
+const todos = [
+  {
+    _id: new ObjectID(),
+    text: 'Todo 1',
+    createdAt: Date.now(),
+    _creator: userOneId
+  },
+  {
+    _id: new ObjectID(),
+    text: 'Todo 2',
+    createdAt: Date.now(),
+    _creator: userTwoId
   }
 ];
 
@@ -37,19 +57,6 @@ const populateUsers = (done) => {
 
   }).then(() => done());
 };
-
-const todos = [
-  {
-    _id: new ObjectID(),
-    text: 'Todo 1',
-    createdAt: Date.now()
-  },
-  {
-    _id: new ObjectID(),
-    text: 'Todo 2',
-    createdAt: Date.now()
-  }
-];
 
 const populateTodos = (done) => {
   Todo.remove({}).then(() => {
